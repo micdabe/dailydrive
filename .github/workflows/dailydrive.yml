@@ -30,7 +30,7 @@ jobs:
     # 4. NUOVO: Crea il file dei token per saltare il login (Verifica il nome esatto del file generato sul PC, es. .tokens.json)
     - name: Crea il file dei token di autenticazione
       run: |
-        echo '${{ secrets.SPOTIFY_TOKENS }}' > .spotify-tokens.json
+        echo '${{ secrets.SPOTIFY_TOKENS }}' > .spotify-token.json
         
     # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
     - name: Installa le dipendenze
