@@ -14,13 +14,13 @@ jobs:
     steps:
     # 1. Scarica il codice del repository sul server di GitHub
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     # 2. Configura Node.js (visto che install.sh potrebbe richiederlo)
     - name: Configura Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: '20'
+        node-version: '24'
         
     # NUOVO STEP: Questo crea il file config.yaml prendendo il contenuto dai tuoi Secrets
     - name: Crea il file config.yaml
