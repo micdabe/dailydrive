@@ -21,7 +21,12 @@ jobs:
       uses: actions/actions/setup-node@v4
       with:
         node-version: '20'
-
+        
+    # NUOVO STEP: Questo crea il file config.yaml prendendo il contenuto dai tuoi Secrets
+    - name: Crea il file config.yaml
+      run: |
+        echo "${{ secrets.CONFIG_CONTENUTO }}" > config.yaml
+        
     # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
     - name: Installa le dipendenze
       run: |
