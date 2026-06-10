@@ -1,0 +1,35 @@
+name: Esecuzione Giornaliera DailyDrive
+
+on:
+  schedule:
+    # Questo comando fa girare lo script ogni giorno alle 05:00 del mattino (ora UTC)
+    # Corrisponde alle 07:00 italiane (o 06:00 quando c'è l'ora solare)
+    - cron: '0 5 * * *'
+  workflow_dispatch: # Ti permette anche di farlo partire manualmente quando vuoi
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Scarica il codice del repository sul server di GitHub
+    - name: Checkout repository
+      uses: actions/actions/checkout@v4
+
+    # 2. Configura Node.js (visto che install.sh potrebbe richiederlo)
+    - name: Configura Node.js
+      uses: actions/actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
+    - name: Installa le dipendenze
+      run: |
+        chmod +x install.sh
+        ./install.sh
+
+    # 4. Avvia lo script principale
+    # Nota: Verifica nel file README del progetto se per avviarlo serve "npm start", "node index.js" o altro.
+    - name: Avvia DailyDrive
+      run: |
+        npm start
