@@ -21,18 +21,18 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+
+    # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
+    - name: Installa le dipendenze
+      run: |
+        chmod +x install.sh
+        ./install.sh
         
     # NUOVO STEP: Questo crea il file config.yaml prendendo il contenuto dai tuoi Secrets
     - name: Crea il file config.yaml
       run: |
         echo "${{ secrets.CONFIG_CONTENUTO }}" > config.yaml
         
-    # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
-    - name: Installa le dipendenze
-      run: |
-        chmod +x install.sh
-        ./install.sh
-
     # 4. Avvia lo script principale
     # Nota: Verifica nel file README del progetto se per avviarlo serve "npm start", "node index.js" o altro.
     - name: Avvia DailyDrive
