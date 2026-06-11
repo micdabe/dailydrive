@@ -528,6 +528,14 @@ async function main() {
     }
   }
 
+  // Step 8B --- 🚀 NEW CODE TO MIX ONLY MIXABLE EPISODES ---
+  // We just take the mixableEpisodes and shuffle the podcast randomly
+  for (let i = mixableEpisodes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [mixableEpisodes[i], mixableEpisodes[j]] = [mixableEpisodes[j], mixableEpisodes[i]];
+  }
+  // ---------------------------------------------------------------
+
   // Step 9: Mix podcasts and music according to the configured pattern
   console.log(`\n🔀 Mixing with pattern: ${config.mix_pattern || "PMMM"}`);
   const mixed = [...pinnedFirst, ...mixContent(mixableEpisodes, tracks, config.mix_pattern)];
