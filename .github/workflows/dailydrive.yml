@@ -4,8 +4,8 @@ on:
   schedule:
     # Questo comando fa girare lo script ogni giorno alle 05:00 del mattino (ora UTC)
     # Corrisponde alle 07:00 italiane (o 06:00 quando c'è l'ora solare)
-    - cron: '12 5 * * *'
-    - cron: '56 3 * * *'
+    # - cron: '12 5 * * *'
+    - cron: '56 2 * * *'
   workflow_dispatch: # Ti permette anche di farlo partire manualmente quando vuoi
 
 jobs:
