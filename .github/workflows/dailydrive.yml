@@ -17,24 +17,60 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
+
+    # --- 🤖 CONTROLLO SE È GIÀ STATO ESEGUITO MANUALLY OGGI ---
+    # Questo step controlla tramite le API di GitHub se nelle ultime 12 ore
+    # il workflow è stato già attivato tramite "workflow_dispatch" (manualmente)
+    - name: Verifica esecuzioni manuali recenti
+      id: check-manual
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+      # Chiediamo a GitHub l'elenco delle esecuzioni avviate manualmente (workflow_dispatch)
+         MANUAL_RUNS=$(gh api repos/${{ github.repository }}/actions/workflows/dailydrive.yml/runs?event=workflow_dispatch&status=success --jq '.workflow_runs[0].created_at')
+        
+        if [ ! -z "$MANUAL_RUNS" ]; then
+          # Convertiamo il tempo dell'ultima esecuzione manuale e l'ora attuale in secondi
+          LAST_RUN_SEC=$(date -d "$MANUAL_RUNS" +%s)
+          CURRENT_SEC=$(date +%s)
+          DIFF_HOURS=$(( (CURRENT_SEC - LAST_RUN_SEC) / 3600 ))
+          
+          # Se il workflow è attivato dal cron (schedule) E c'è stata una run manuale meno di 12 ore fa
+          if [ "${{ github.event_name }}" = "schedule" ] && [ $DIFF_HOURS -lt 12 ]; then
+            echo "Avviso: Lo script è già stato eseguito manualmente $DIFF_HOURS ore fa."
+            echo "SKIP_RUN=true" >> $GITHUB_ENV
+          else
+            echo "Nessuna esecuzione manuale recente rilevata (o avviata manualmente adesso)."
+            echo "SKIP_RUN=false" >> $GITHUB_ENV
+          fi
+        else
+          echo "Nessuna run manuale trovata nello storico."
+          echo "SKIP_RUN=false" >> $GITHUB_ENV
+        fi
+
+
     # 2. Configura Node.js (visto che install.sh potrebbe richiederlo)
     - name: Configura Node.js
+      if: env.SKIP_RUN != 'true'   # Salta questo step se SKIP_RUN è vero
       uses: actions/setup-node@v6
       with:
         node-version: '24'
         
     # NUOVO STEP: Questo crea il file config.yaml prendendo il contenuto dai tuoi Secrets
     - name: Crea il file config.yaml
+      if: env.SKIP_RUN != 'true'   # Salta questo step se SKIP_RUN è vero
       run: |
         echo "${{ secrets.CONFIG_CONTENUTO }}" > config.yaml
         
     # 4. NUOVO: Crea il file dei token per saltare il login (Verifica il nome esatto del file generato sul PC, es. .tokens.json)
     - name: Crea il file dei token di autenticazione
+      if: env.SKIP_RUN != 'true'   # Salta questo step se SKIP_RUN è vero
       run: |
         echo '${{ secrets.SPOTIFY_TOKENS }}' > .spotify-token.json
         
     # 3. ESEGUE I COMANDI DELLE ISTRUZIONI
     - name: Installa le dipendenze
+      if: env.SKIP_RUN != 'true'   # Salta questo step se SKIP_RUN è vero
       run: |
         chmod +x install.sh
         ./install.sh
@@ -42,5 +78,6 @@ jobs:
     # 4. Avvia lo script principale
     # Nota: Verifica nel file README del progetto se per avviarlo serve "npm start", "node index.js" o altro.
     - name: Avvia DailyDrive
+      if: env.SKIP_RUN != 'true'   # Salta questo step se SKIP_RUN è vero
       run: |
         npm start
